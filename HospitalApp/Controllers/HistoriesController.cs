@@ -18,7 +18,7 @@ namespace HospitalApp.Controllers
         {
             _context = context;
         }
-
+        [CustomAuthorizeAttribute("Administrator", "HealthcareProfessional", "Patient")]
         // GET: Histories
         public async Task<IActionResult> Index()
         {
@@ -44,7 +44,7 @@ namespace HospitalApp.Controllers
 
             return View(history);
         }
-
+        
         // GET: Histories/Create
         public IActionResult Create()
         {

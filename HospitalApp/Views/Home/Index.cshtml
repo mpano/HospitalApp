@@ -1,5 +1,26 @@
-﻿@{
+﻿@using Microsoft.AspNetCore.Http;
+@{
     ViewData["Title"] = "Home Page";
+    var Getrole = Context.Session.GetString("Role");
+    if (Getrole == "Patient")
+    {
+
+        Layout = "~/Views/Shared/_Layoutpatient.cshtml";
+
+    }
+    else if (Getrole == "Administrato")
+    {
+        Layout = "~/Views/Shared/_Layoutadmin.cshtml";
+    }
+    else if (Getrole == "HealthcareProfessional")
+    {
+        Layout = "~/Views/Shared/_Layoutadmin.cshtml";
+    }
+
+    else
+    {
+        Layout = "~/Views/Shared/_Layout.cshtml";
+    }
 }
 
 <div class="text-center">

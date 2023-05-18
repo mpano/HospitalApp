@@ -2,6 +2,9 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using HospitalApp.Data;
 using ServiceStack;
+using HospitalApp.Configuration;
+using HospitalApp.Services;
+using System.Configuration;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDbContext<HospitalAppContext>(options =>
@@ -14,6 +17,8 @@ builder.Services.AddSession(options =>
     options.Cookie.HttpOnly = true; // Ensure the session cookie is only accessible via HTTP
     options.Cookie.IsEssential = true; // Make the session cookie essential to allow it during GDPR consent
 });
+//builder.Services.Configure<EmailSettings>(Configuration.GetSection("EmailSettings")); //Connect krwaya jason or email class ko 
+builder.Services.AddTransient<IMailService, MailServices>();
 
 var app = builder.Build();
 

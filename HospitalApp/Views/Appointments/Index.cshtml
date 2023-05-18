@@ -58,6 +58,15 @@
                 <a asp-action="Edit" asp-route-id="@item.AppointmentID">Edit</a> |
                 <a asp-action="Details" asp-route-id="@item.AppointmentID">Details</a> |
                 <a asp-action="Delete" asp-route-id="@item.AppointmentID">Delete</a>
+               
+                    @if (item.Approved)
+                    {
+                        <span>Approved</span>
+                    }
+                    else
+                    {
+                        <a asp-action="Approved" asp-route-id="@item.AppointmentID">Approve</a>
+                    }
             </td>
         </tr>
 }

@@ -35,7 +35,7 @@ namespace HospitalApp.Controllers
 
             if (userRole == Role.Patient.ToString())
             {
-                string userEmail = HttpContext.Session.GetString("Email");
+                string userEmail = HttpContext.Session.GetString("Username");
                 var patient = _context.Patient.Where(p => p.Email == userEmail && p != null).ToList();
 
                 if (patient.Count > 0)

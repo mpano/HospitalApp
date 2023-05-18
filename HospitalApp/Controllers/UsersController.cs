@@ -42,7 +42,7 @@ namespace HospitalApp.Controllers
                 {
                     fullName = user.fullName,
                     Phone = user.Phone,
-                    Email = user.Email,
+                    Email = user.Username,
                     Address = ".",
                     Gender = ".",
                     InsuranceProvider = "RAM",
@@ -108,8 +108,6 @@ namespace HospitalApp.Controllers
                     return RedirectToAction("Create", "Appointment");
             }
         }
-
-        // Method to verify the password
         private bool VerifyPassword(string enteredPassword, string storedPassword)
         {
             using (SHA256 sha256 = SHA256.Create())
@@ -136,6 +134,12 @@ namespace HospitalApp.Controllers
                 byte[] hash = sha256.ComputeHash(bytes);
                 return Convert.ToBase64String(hash);
             }
+        }
+
+        public IActionResult Logout()
+        {
+            HttpContext.Session.Clear();
+            return RedirectToAction("Login");
         }
     }
 }

@@ -9,6 +9,7 @@
         public string AppointmentType { get; set; }
         public int HealthcareProviderID { get; set; }
         public string Notes { get; set; }
+        public bool Approved { get; internal set; }
 
     }
 }

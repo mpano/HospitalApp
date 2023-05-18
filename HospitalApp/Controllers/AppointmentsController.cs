@@ -7,19 +7,24 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using HospitalApp.Data;
 using HospitalApp.Models;
+using ServiceStack;
+using HospitalApp.Services;
 
 namespace HospitalApp.Controllers
 {
     public class AppointmentsController : Controller
     {
         private readonly HospitalAppContext _context;
+        private readonly IMailService _service;
 
-        public AppointmentsController(HospitalAppContext context)
+        public AppointmentsController(HospitalAppContext context, IMailService service)
         {
+            _service = service;
             _context = context;
         }
 
         // GET: Appointments
+        [CustomAuthorizeAttribute("Administrator", "HealthcareProfessional")]
         public async Task<IActionResult> Index()
         {
               return _context.Appointment != null ? 
@@ -48,6 +53,8 @@ namespace HospitalApp.Controllers
         // GET: Appointments/Create
         public IActionResult Create()
         {
+            ViewData["PatientID"] = new SelectList(_context.Patient, "id", "fullName");
+            ViewData["HealthcareProviderID"] = new SelectList(_context.HealthcareSpecialist, "HealthcareProviderID", "FirstName");
             return View();
         }
 
@@ -64,6 +71,9 @@ namespace HospitalApp.Controllers
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
+            ViewData["PatientID"] = new SelectList(_context.Patient, "id", "fullName", appointment.PatientID);
+            ViewData["HealthcareProviderID"] = new SelectList(_context.HealthcareSpecialist, "HealthcareProviderID", "FirstName", appointment.HealthcareProviderID);
+
             return View(appointment);
         }
 
@@ -158,6 +168,31 @@ namespace HospitalApp.Controllers
         private bool AppointmentExists(int id)
         {
           return (_context.Appointment?.Any(e => e.AppointmentID == id)).GetValueOrDefault();
+        }
+
+        public async Task<IActionResult> Approved(int id)
+        {
+            var appointment = await _context.Appointment.SingleOrDefaultAsync(a => a.AppointmentID == id);
+
+            if (appointment == null)
+            {
+                return NotFound();
+            }
+
+            appointment.Approved = true;
+            await _context.SaveChangesAsync();
+
+            var mailContent = new MailContent
+            {
+                ToEmailAddress = "mpanoaki@gmail.com",
+                EmailSubject = "Appointment Approved",
+                EmailBody = $"Thank you for booking a appointment  on {appointment.AppointmentDate}   "
+            };
+
+            _service.sendEmail(mailContent);
+
+            return Json(new { success = true });
+
         }
     }
 }
