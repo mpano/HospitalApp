@@ -2,6 +2,20 @@
 
 @{
     ViewData["Title"] = "Index";
+    var Getrole = Context.Session.GetString("Role");
+    if (Getrole == "Administrator")
+    {
+        Layout = "~/Views/Shared/_Layoutadmin.cshtml";
+    }
+    else if (Getrole == "HealthcareProfessional")
+    {
+        Layout = "~/Views/Shared/_Layoutadmin.cshtml";
+    }
+
+    else
+    {
+        Layout = "~/Views/Shared/_Layout.cshtml";
+    }
 }
 
 <h1>Index</h1>
@@ -56,7 +70,6 @@
             </td>
             <td>
                 <a asp-action="Edit" asp-route-id="@item.HealthcareProviderID">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.HealthcareProviderID">Details</a> |
                 <a asp-action="Delete" asp-route-id="@item.HealthcareProviderID">Delete</a>
             </td>
         </tr>

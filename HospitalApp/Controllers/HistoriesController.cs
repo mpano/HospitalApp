@@ -18,7 +18,7 @@ namespace HospitalApp.Controllers
         {
             _context = context;
         }
-        [CustomAuthorizeAttribute("Administrator", "HealthcareProfessional", "Patient")]
+
         // GET: Histories
         public async Task<IActionResult> Index()
         {
@@ -66,6 +66,7 @@ namespace HospitalApp.Controllers
                 return RedirectToAction(nameof(Index));
             }
             ViewData["PatientID"] = new SelectList(_context.Patient, "id", "fullName", history.PatientID);
+
             return View(history);
         }
 

@@ -7,6 +7,8 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using HospitalApp.Data;
 using HospitalApp.Models;
+using iTextSharp.text.pdf;
+using iTextSharp.text;
 
 namespace HospitalApp.Controllers
 {
@@ -184,6 +186,56 @@ namespace HospitalApp.Controllers
         private bool PatientExists(int id)
         {
           return (_context.Patient?.Any(e => e.id == id)).GetValueOrDefault();
+        }
+        private byte[] GeneratePdf(List<Patient> medicalHistories)
+        {
+            // Create a new PDF document
+            var document = new Document();
+            var memoryStream = new MemoryStream();
+            var writer = PdfWriter.GetInstance(document, memoryStream);
+            document.Open();
+
+            // Add content to the PDF document
+            var paragraph = new Paragraph("Patient List");
+            document.Add(paragraph);
+
+            // Add the medical histories data to the PDF document
+            foreach (var medicalHistory in medicalHistories)
+            {
+                var historyParagraph = new Paragraph($"Patient Id:  {medicalHistory.id}, Full name: {medicalHistory.fullName}, Email: {medicalHistory.Email}, Ensurance: {medicalHistory.InsuranceProvider}");
+                document.Add(historyParagraph);
+            }
+
+            document.Close();
+
+            // Return the PDF document as bytes
+            return memoryStream.ToArray();
+        }
+        public async Task<IActionResult> DownloadPdf()
+        {
+            string userRole = HttpContext.Session.GetString("Role");
+
+            if (userRole == Role.Patient.ToString())
+            {
+                string userEmail = HttpContext.Session.GetString("Username");
+                var patient = _context.Patient.Where(p => p.Email == userEmail && p != null).ToList();
+
+                if (patient.Count > 0)
+                {
+                    var patientId = patient.First().id;
+                    HttpContext.Session.SetString("Patient", patientId.ToString());
+                }
+
+                return View(patient);
+            }
+            else
+            {
+                var patients = await _context.Patient.Where(p => p != null).ToListAsync();
+                var pdfBytes = GeneratePdf(patients);
+                return File(pdfBytes, "application/pdf", "patientlist.pdf");
+                
+            }
+            
         }
     }
 }

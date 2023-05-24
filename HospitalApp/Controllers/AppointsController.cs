@@ -12,96 +12,91 @@ using HospitalApp.Services;
 
 namespace HospitalApp.Controllers
 {
-    public class AppointmentsController : Controller
+    public class AppointsController : Controller
     {
         private readonly HospitalAppContext _context;
         private readonly IMailService _service;
 
-        public AppointmentsController(HospitalAppContext context, IMailService service)
+        public AppointsController(HospitalAppContext context, IMailService service)
         {
-            _service = service;
             _context = context;
+            _service = service;
         }
 
-        // GET: Appointments
-        [CustomAuthorizeAttribute("Administrator", "HealthcareProfessional")]
+        // GET: Appoints
         public async Task<IActionResult> Index()
         {
-              return _context.Appointment != null ? 
-                          View(await _context.Appointment.ToListAsync()) :
-                          Problem("Entity set 'HospitalAppContext.Appointment'  is null.");
+              return _context.Appoint != null ? 
+                          View(await _context.Appoint.ToListAsync()) :
+                          Problem("Entity set 'HospitalAppContext.Appoint'  is null.");
         }
 
-        // GET: Appointments/Details/5
+        // GET: Appoints/Details/5
         public async Task<IActionResult> Details(int? id)
         {
-            if (id == null || _context.Appointment == null)
+            if (id == null || _context.Appoint == null)
             {
                 return NotFound();
             }
 
-            var appointment = await _context.Appointment
+            var appoint = await _context.Appoint
                 .FirstOrDefaultAsync(m => m.AppointmentID == id);
-            if (appointment == null)
+            if (appoint == null)
             {
                 return NotFound();
             }
 
-            return View(appointment);
+            return View(appoint);
         }
 
-        // GET: Appointments/Create
+        // GET: Appoints/Create
         public IActionResult Create()
         {
-            ViewData["PatientID"] = new SelectList(_context.Patient, "id", "fullName");
             ViewData["HealthcareProviderID"] = new SelectList(_context.HealthcareSpecialist, "HealthcareProviderID", "FirstName");
             return View();
         }
 
-        // POST: Appointments/Create
+        // POST: Appoints/Create
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [CustomAuthorizeAttribute("Administrator", "HealthcareProfessional", "Patient")]
-        public async Task<IActionResult> Create([Bind("AppointmentID,PatientID,AppointmentDate,AppointmentTime,AppointmentType,HealthcareProviderID,Notes")] Appointment appointment)
+        public async Task<IActionResult> Create([Bind("AppointmentID,PatientID,AppointmentDate,AppointmentTime,AppointmentType,HealthcareProviderID,Notes,Approved")] Appoint appoint)
         {
             if (ModelState.IsValid)
             {
-                _context.Add(appointment);
+                _context.Add(appoint);
                 await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction("Index", "Home");
             }
-            ViewData["PatientID"] = new SelectList(_context.Patient, "id", "fullName", appointment.PatientID);
-            ViewData["HealthcareProviderID"] = new SelectList(_context.HealthcareSpecialist, "HealthcareProviderID", "FirstName", appointment.HealthcareProviderID);
-
-            return View(appointment);
+            ViewData["HealthcareProviderID"] = new SelectList(_context.HealthcareSpecialist, "HealthcareProviderID", "FirstName", appoint.HealthcareProviderID);
+            return View(appoint);
         }
 
-        // GET: Appointments/Edit/5
+        // GET: Appoints/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
-            if (id == null || _context.Appointment == null)
+            if (id == null || _context.Appoint == null)
             {
                 return NotFound();
             }
 
-            var appointment = await _context.Appointment.FindAsync(id);
-            if (appointment == null)
+            var appoint = await _context.Appoint.FindAsync(id);
+            if (appoint == null)
             {
                 return NotFound();
             }
-            return View(appointment);
+            return View(appoint);
         }
 
-        // POST: Appointments/Edit/5
+        // POST: Appoints/Edit/5
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("AppointmentID,PatientID,AppointmentDate,AppointmentTime,AppointmentType,HealthcareProviderID,Notes")] Appointment appointment)
+        public async Task<IActionResult> Edit(int id, [Bind("AppointmentID,PatientID,AppointmentDate,AppointmentTime,AppointmentType,HealthcareProviderID,Notes,Approved")] Appoint appoint)
         {
-            if (id != appointment.AppointmentID)
+            if (id != appoint.AppointmentID)
             {
                 return NotFound();
             }
@@ -110,12 +105,12 @@ namespace HospitalApp.Controllers
             {
                 try
                 {
-                    _context.Update(appointment);
+                    _context.Update(appoint);
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!AppointmentExists(appointment.AppointmentID))
+                    if (!AppointExists(appoint.AppointmentID))
                     {
                         return NotFound();
                     }
@@ -126,54 +121,53 @@ namespace HospitalApp.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            return View(appointment);
+            return View(appoint);
         }
 
-        // GET: Appointments/Delete/5
+        // GET: Appoints/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
-            if (id == null || _context.Appointment == null)
+            if (id == null || _context.Appoint == null)
             {
                 return NotFound();
             }
 
-            var appointment = await _context.Appointment
+            var appoint = await _context.Appoint
                 .FirstOrDefaultAsync(m => m.AppointmentID == id);
-            if (appointment == null)
+            if (appoint == null)
             {
                 return NotFound();
             }
 
-            return View(appointment);
+            return View(appoint);
         }
 
-        // POST: Appointments/Delete/5
+        // POST: Appoints/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            if (_context.Appointment == null)
+            if (_context.Appoint == null)
             {
-                return Problem("Entity set 'HospitalAppContext.Appointment'  is null.");
+                return Problem("Entity set 'HospitalAppContext.Appoint'  is null.");
             }
-            var appointment = await _context.Appointment.FindAsync(id);
-            if (appointment != null)
+            var appoint = await _context.Appoint.FindAsync(id);
+            if (appoint != null)
             {
-                _context.Appointment.Remove(appointment);
+                _context.Appoint.Remove(appoint);
             }
             
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
-        private bool AppointmentExists(int id)
+        private bool AppointExists(int id)
         {
-          return (_context.Appointment?.Any(e => e.AppointmentID == id)).GetValueOrDefault();
+          return (_context.Appoint?.Any(e => e.AppointmentID == id)).GetValueOrDefault();
         }
-
         public async Task<IActionResult> Approved(int id)
         {
-            var appointment = await _context.Appointment.SingleOrDefaultAsync(a => a.AppointmentID == id);
+            var appointment = await _context.Appoint.SingleOrDefaultAsync(a => a.AppointmentID == id);
             var patient = await _context.Patient.SingleOrDefaultAsync(b => b.id == appointment.PatientID);
             if (appointment == null)
             {
@@ -185,9 +179,9 @@ namespace HospitalApp.Controllers
 
             var mailContent = new MailContent
             {
-                ToEmailAddress = "panoakim@gmail.com",
+                ToEmailAddress = "mpano.akim@gmail.com",
                 EmailSubject = "Appointment Approved",
-                EmailBody = $"Thank you for booking a appointment  on {appointment.AppointmentDate}  "
+                EmailBody = $"Thank you for booking a appointment  on {appointment.AppointmentDate}   "
             };
 
             _service.sendEmail(mailContent);

@@ -1,15 +1,32 @@
-﻿@model HospitalApp.Models.History
+﻿@model HospitalApp.Models.MedicalHist
 
 @{
     ViewData["Title"] = "Edit";
+    var Getrole = Context.Session.GetString("Role");
+    if (Getrole == "Patient")
+    {
 
-    Layout = "~/Views/Shared/_Layoutadmin.cshtml";
-    
+        Layout = "~/Views/Shared/_Layoutpatient.cshtml";
+
+    }
+    else if (Getrole == "Administrator")
+    {
+        Layout = "~/Views/Shared/_Layoutadmin.cshtml";
+    }
+    else if (Getrole == "HealthcareProfessional")
+    {
+        Layout = "~/Views/Shared/_Layoutadmin.cshtml";
+    }
+
+    else
+    {
+        Layout = "~/Views/Shared/_Layout.cshtml";
+    }
 }
 
 <h1>Edit</h1>
 
-<h4>History</h4>
+<h4>MedicalHist</h4>
 <hr />
 <div class="row">
     <div class="col-md-4">
@@ -18,7 +35,7 @@
             <input type="hidden" asp-for="Id" />
             <div class="form-group">
                 <label asp-for="PatientID" class="control-label"></label>
-                <input asp-for="PatientID" class="form-control" readonly />
+                <input asp-for="PatientID" class="form-control" />
                 <span asp-validation-for="PatientID" class="text-danger"></span>
             </div>
             <div class="form-group">
@@ -47,12 +64,20 @@
                 <span asp-validation-for="Notes" class="text-danger"></span>
             </div>
             <div class="form-group">
+                <label asp-for="PatientEmail" class="control-label"></label>
+                <input asp-for="PatientEmail" class="form-control" />
+                <span asp-validation-for="PatientEmail" class="text-danger"></span>
+            </div>
+            <div class="form-group">
                 <input type="submit" value="Save" class="btn btn-primary" />
             </div>
         </form>
     </div>
 </div>
 
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
 
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}

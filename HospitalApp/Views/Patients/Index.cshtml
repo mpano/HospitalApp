@@ -2,14 +2,37 @@
 
 @{
     ViewData["Title"] = "Index";
+    var Getrole = Context.Session.GetString("Role");
+    if (Getrole == "Patient")
+    {
+
+        Layout = "~/Views/Shared/_Layoutpatient.cshtml";
+
+    }
+    else if (Getrole == "Administrator")
+    {
+        Layout = "~/Views/Shared/_Layoutadmin.cshtml";
+    }
+    else if (Getrole == "HealthcareProfessional")
+    {
+        Layout = "~/Views/Shared/_Layoutadmin.cshtml";
+    }
+
+    else
+    {
+        Layout = "~/Views/Shared/_Layout.cshtml";
+    }
 }
 
-<h1>Index</h1>
-
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
-<table class="table">
+<h1>Patient Information</h1>
+@if (Getrole == "Administrator" || Getrole == "HealthcareProfessional")
+{
+    <p>
+        <button type="button" onclick="location.href='@Url.Action("Create")'">Create New</button>
+        <button type="button" onclick="location.href='@Url.Action("DownloadPdf")'">Download PDF</button>
+    </p>
+}
+<table class="table table-hover table-responsive table-info">
     <thead>
         <tr>
             <th>
@@ -68,7 +91,6 @@
             </td>
             <td>
                 <a asp-action="Edit" asp-route-id="@item.id">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.id">Details</a> |
                 <a asp-action="Delete" asp-route-id="@item.id">Delete</a>
             </td>
         </tr>

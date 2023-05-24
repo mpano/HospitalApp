@@ -24,5 +24,7 @@ namespace HospitalApp.Data
 
         public DbSet<HospitalApp.Models.HealthcareSpecialist>? HealthcareSpecialist { get; set; }
         public DbSet<HospitalApp.Models.User>? Users { get; set; }
+        public DbSet<HospitalApp.Models.MedicalHist>? MedicalHist { get; set; }
+        public DbSet<HospitalApp.Models.Appoint>? Appoint { get; set; }
     }
 }

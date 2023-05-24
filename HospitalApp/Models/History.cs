@@ -9,5 +9,6 @@
         public string Treatment { get; set; }
         public string Medications { get; set; }
         public string Notes { get; set; }
+        public string PatientEmail { get; set; }
     }
 }
